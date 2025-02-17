@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sierpinski Triangle Fractal</title>
+  <style>
+    /* Make sure the SVG fills the browser window */
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    svg {
+      border: 1px solid #555;
+    }
+  </style>
+</head>
+<body>
+  <!-- The SVG container with a viewBox ensures it scales without losing detail -->
+  <svg id="sierpinski" width="600" height="600" viewBox="0 0 600 600"></svg>
+
+  <script>
+    const svg = document.getElementById('sierpinski');
+    const maxDepth = 7;  // Adjust this to change the fractal detail
+
+    /**
+     * Draws a filled triangle given three vertices.
+     * @param {number[]} p1 - [x, y] coordinates for the first vertex.
+     * @param {number[]} p2 - [x, y] coordinates for the second vertex.
+     * @param {number[]} p3 - [x, y] coordinates for the third vertex.
+     */
+    function drawTriangle(p1, p2, p3) {
+      const triangle = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      triangle.setAttribute("points", `${p1[0]},${p1[1]} ${p2[0]},${p2[1]} ${p3[0]},${p3[1]}`);
+      triangle.setAttribute("fill", "#0f0");
+      triangle.setAttribute("stroke", "#000");
+      triangle.setAttribute("stroke-width", "1");
+      svg.appendChild(triangle);
+    }
+
+    /**
+     * Recursively draws the Sierpinski triangle.
+     * @param {number[]} p1 - Vertex 1 of the triangle.
+     * @param {number[]} p2 - Vertex 2 of the triangle.
+     * @param {number[]} p3 - Vertex 3 of the triangle.
+     * @param {number} depth - Current recursion depth.
+     */
+    function sierpinski(p1, p2, p3, depth) {
+      if (depth === 0) {
+        drawTriangle(p1, p2, p3);
+        return;
+      }
+
+      // Calculate midpoints of each side
+      const mid12 = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+      const mid23 = [(p2[0] + p3[0]) / 2, (p2[1] + p3[1]) / 2];
+      const mid31 = [(p3[0] + p1[0]) / 2, (p3[1] + p1[1]) / 2];
+
+      // Recursively draw the three subtriangles
+      sierpinski(p1, mid12, mid31, depth - 1);
+      sierpinski(mid12, p2, mid23, depth - 1);
+      sierpinski(mid31, mid23, p3, depth - 1);
+    }
+
+    // Define the vertices of the largest triangle (an equilateral triangle)
+    const p1 = [300, 20];   // Top vertex
+    const p2 = [20, 580];   // Bottom-left vertex
+    const p3 = [580, 580];  // Bottom-right vertex
+
+    // Start the recursive drawing
+    sierpinski(p1, p2, p3, maxDepth);
+  </script>
+</body>
+</html>
